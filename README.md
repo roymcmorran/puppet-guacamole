@@ -86,5 +86,5 @@ Feel free to fork, pull requests and so on.
 ```
 - Implement usage of your own Tomcat instances.
 - Add Debian/Ubuntu support
-- Add function to determine closest apache mirror. 
+- Add function to determine closest apache mirror.  
 ```
