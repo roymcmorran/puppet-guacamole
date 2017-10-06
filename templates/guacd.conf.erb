@@ -1,0 +1,9 @@
+## This file is managed by puppet
+## Do not make any manual changes
+
+[daemon]
+pid_file = /var/run/guacd.pid
+
+[server]
+bind_host = <%= @guacd_listen_ip %>
+bind_port = <%= @guacd_listen_port %>

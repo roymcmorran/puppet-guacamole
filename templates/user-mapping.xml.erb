@@ -1,0 +1,25 @@
+
+<!-- Per-user authentication and config information -->
+  <authorize
+        username="<%= @username -%>"
+        password="<%= @password -%>"
+<%-      if @md5_encrypted -%>
+        encoding="md5">
+<%       else  -%>
+        >
+<%-     end %>
+
+    <!-- Connection list -->
+<%      @connections.map.each do |node, proto| -%>
+        <connection name="<%= node -%>">
+<%        proto.map.each do |k,v| -%>
+          <protocol><%= k -%></protocol>
+          <param name="hostname"><%= node -%></param>
+<%        v.each do |k1,v1| -%>
+          <param name="<%= k1 -%>"><%= v1 -%></param>
+<%    end -%>
+        </connection>
+<%-  end -%>
+<%-  end -%>
+
+  </authorize>
