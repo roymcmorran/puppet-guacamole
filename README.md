@@ -1,5 +1,6 @@
+[![Build Status](https://travis-ci.org/slenky/puppet-guacamole.svg?branch=master)](https://travis-ci.org/slenky/puppet-guacamole)
 
-# guacamole
+# Guacamole - Puppet Module
 
 #### Table of Contents
 
@@ -7,7 +8,6 @@
 2. [Setup - The basics of getting started with guacamole](#setup)
     * [What guacamole affects](#what-guacamole-affects)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with guacamole](#beginning-with-guacamole)
 3. [Usage - Configuration options and additional functionality](#usage)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
@@ -15,57 +15,76 @@
 
 ## Description
 
-Start with a one- or two-sentence summary of what the module does and/or what problem it solves. This is your 30-second elevator pitch for your module. Consider including OS/Puppet version it works with.       
-
-You can give more descriptive information in a second paragraph. This paragraph should answer the questions: "What does this module *do*?" and "Why would I use it?" If your module has a range of functionality (installation, configuration, management, etc.), this is the time to mention it.
+This module installs, deploys and configures [Apache Guacomole](#https://guacamole.incubator.apache.org/) on CentOS7.
 
 ## Setup
 
 ### What guacamole affects **OPTIONAL**
 
-If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
-
-If there's more that they should know about, though, this is the place to mention:
-
-* Files, packages, services, or operations that the module will alter, impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
+* Install Guacamole required packages.
+* Install Tomcat 8 and deploy Guacd to him.
+* Configure unlimited amount of users with connection list.
 
 ### Setup Requirements **OPTIONAL**
 
-If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here. 
-  
-If your most recent release breaks compatibility or requires particular steps for upgrading, you might want to include an additional "Upgrading" section here.
-
-### Beginning with guacamole  
-
-The very basic steps needed for a user to get the module up and running. This can include setup steps, if necessary, or it can be an example of the most basic use of the module.
+Just install dependent modules.
 
 ## Usage
 
-This section is where you describe how to customize, configure, and do the fancy stuff with your module here. It's especially helpful if you include usage examples and code samples for doing things with your module.
+```
+  # Hash of the servers for Guacamole to connect for.
+  $hashes = {
+    '192.168.1.101' => {             #Hostname or IP address
+      'rdp' => {                     # Protocol of connection: rdp,vnc,ssh
+          'password'    => 'vagrant',
+          'username'    => 'vagrant',
+          'port'        => '3389',   # default rdp port
+          'security'    => 'nla',    #Network Level Authentication
+          'ignore-cert' => 'true'
+          # Watch more here: https://guacamole.incubator.apache.org/doc/gug/configuring-guacamole.html#rdp
+      }
+    },
+    '192.168.1.102' => {
+      'vnc' => {
+          'password' => 'somepass',
+          'port' => '5900'
+      },
+    },
+  }
+  class { 'guacamole':
+    guacd_listen_port => '4822'
+  }
+  # Create an user in Guacamole with available connections as $hashes
+  guacamole::user { 'bohdan':
+    password    => 'passw0rd',
+    connections => $hashes
+  }
+```
 
 ## Reference
 
-Users need a complete list of your module's classes, types, defined types providers, facts, and functions, along with the parameters for each. You can provide this list either via Puppet Strings code comments or as a complete list in the README Reference section.
-
-* If you are using Puppet Strings code comments, this Reference section should include Strings information so that your users know how to access your documentation.
-
-* If you are not using Puppet Strings, include a list of all of your classes, defined types, and so on, along with their parameters. Each element in this listing should include:
-
-  * The data type, if applicable.
-  * A description of what the element does.
-  * Valid values, if the data type doesn't make it obvious.
-  * Default value, if any.
+For all usage you just need ::guacamole and ::guacamole::user.
+Will finish this section later.
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc. If there are Known Issues, you might want to include them under their own heading here.
+By now this module applies only for CentOS7(6 maybe).
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them know what the ground rules for contributing are.
+Feel free to fork, pull requests and so on.
 
-## Release Notes/Contributors/Etc. **Optional**
+## Release Notes/Contributors/Etc.
 
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You can also add any additional sections you feel are necessary or important to include here. Please use the `## ` header. 
+```
+0.1.0:
+  - First version of this cute module.
+  - Cake is a Lie.
+```
+
+## TODO
+```
+- Implement usage of your own Tomcat instances.
+- Add Debian/Ubuntu support
+- Add function to determine closest apache mirror.
+```
