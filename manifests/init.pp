@@ -14,12 +14,14 @@
 class guacamole (
   String $server_version = '0.9.13',
   String $guacd_listen_ip = '127.0.0.1',
-  String $guacd_listen_port = '4822'
+  String $guacd_listen_port = '4822',
+  Boolean $install_tomcat = true,
   ) {
     class { '::guacamole::install':
       server_version    => $server_version,
       guacd_listen_ip   => $guacd_listen_ip,
-      guacd_listen_port => $guacd_listen_port
+      guacd_listen_port => $guacd_listen_port,
+      install_tomcat    => $install_tomcat
     }
     include guacamole::preprovision
     Class['guacamole::preprovision'] -> Class['guacamole::install']

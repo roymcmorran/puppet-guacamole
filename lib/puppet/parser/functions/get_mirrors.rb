@@ -1,10 +1,11 @@
-require 'rest-client'
+require 'net/http'
 require 'json'
+# Add func
 module Puppet::Parser::Functions
-  newfunction(:get_mirrors, :type => :rvalue) do
-    url = 'https://www.apache.org/dyn/closer.cgi?as_json=1'
-    res = RestClient.get(url)
-    data = JSON.parse(res.body)
-    data['preferred']
-   end
+  newfunction(:get_mirrors, :type => :rvalue) do |args|
+    url = args[0]
+    resp = Net::HTTP.get_response(URI.parse(url))
+    data = resp.body
+    JSON.parse(data)['preferred']
+  end
 end
