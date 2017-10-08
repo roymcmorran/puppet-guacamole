@@ -9,17 +9,20 @@ class guacamole::install (
   ) {
     $tomcat_version = '8.5.23'
     tomcat::install { '/opt/tomcat':
-      source_url => "http://apache.ip-connect.vn.ua/tomcat/tomcat-8/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.tar.gz",
+      source_url => "http://${closest_mirror}tomcat/tomcat-8/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.tar.gz",
     }
     tomcat::instance { 'default':
       catalina_home  => '/opt/tomcat',
       #manage_service => true,
     }
   # @TODO: Add function to determine closest mirror
-  #$closest_mirror = inline_template(
-  #  "<%= `curl -s \'https://www.apache.org/dyn/closer.cgi?as_json=1\' | jq --raw-output \'.preferred|rtrimstr("/")\'` %>"
-  #  )
-  $closest_mirror = 'http://apache.volia.net'
+  if ! defined(Package['gnome-session-fallback']) {
+    package { 'gnome-session-fallback':
+        ensure => installed,
+    }
+}
+  $closest_mirror = get_mirrors()
+  #$closest_mirror = 'http://apache.volia.net'
 
   file { [ '/etc/guacamole', '/etc/guacamole/extensions', '/etc/guacamole/lib', '/tmp/gcml' ]:
     ensure => directory
@@ -27,7 +30,7 @@ class guacamole::install (
 
   archive { '/tmp/gcml/guacamole-server.tar.gz':
     ensure       => present,
-    source       => "${closest_mirror}/incubator/guacamole/${server_version}-incubating/source/guacamole-server-${server_version}-incubating.tar.gz",
+    source       => "${closest_mirror}incubator/guacamole/${server_version}-incubating/source/guacamole-server-${server_version}-incubating.tar.gz",
     extract      => true,
     creates      => "/tmp/gcml/guacamole-server-${server_version}-incubating/configure",
     cleanup      => true,
@@ -61,7 +64,7 @@ class guacamole::install (
   }
   tomcat::war { 'guacamole.war':
     catalina_base => '/opt/tomcat',
-    war_source    => "${closest_mirror}/incubator/guacamole/${server_version}-incubating/binary/guacamole-${server_version}-incubating.war",
+    war_source    => "${closest_mirror}incubator/guacamole/${server_version}-incubating/binary/guacamole-${server_version}-incubating.war",
   }
 
   file { '/etc/guacamole/guacd.conf':

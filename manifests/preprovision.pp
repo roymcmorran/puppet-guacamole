@@ -16,7 +16,10 @@ class guacamole::preprovision inherits guacamole::install {
     ensure   => present,
     provider => yum
   }
-
+  package { 'rest-client':
+    ensure   => present,
+    provider => gem
+  }
   package { 'nux-dextop-release':
     ensure   => present,
     provider => 'rpm',
