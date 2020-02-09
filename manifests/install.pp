@@ -33,7 +33,7 @@ class guacamole::install (
       File['/etc/guacamole/guacd.conf'] ~> Service['tomcat']
       tomcat::war { 'guacamole.war':
         catalina_base => '/opt/tomcat',
-        war_source    => "${closest_mirror}incubator/guacamole/${server_version}-incubating/binary/guacamole-${server_version}-incubating.war",
+        war_source    => "${closest_mirror}guacamole/${server_version}/binary/guacamole-${server_version}.war",
       }
     }
 
@@ -44,20 +44,20 @@ class guacamole::install (
 
   archive { '/tmp/gcml/guacamole-server.tar.gz':
     ensure       => present,
-    source       => "${closest_mirror}incubator/guacamole/${server_version}-incubating/source/guacamole-server-${server_version}-incubating.tar.gz",
+    source       => "${closest_mirror}guacamole/${server_version}/source/guacamole-server-${server_version}.tar.gz",
     extract      => true,
-    creates      => "/tmp/gcml/guacamole-server-${server_version}-incubating/configure",
+    creates      => "/tmp/gcml/guacamole-server-${server_version}/configure",
     cleanup      => true,
     extract_path => '/tmp/gcml/',
-    notify       => Guacamole::Build["/tmp/gcml/guacamole-server-${server_version}-incubating"]
+    notify       => Guacamole::Build["/tmp/gcml/guacamole-server-${server_version}"]
     # require => File[$install_path],
   }
 
-  guacamole::build { "/tmp/gcml/guacamole-server-${server_version}-incubating":
+  guacamole::build { "/tmp/gcml/guacamole-server-${server_version}":
     options => '--with-init-dir=/etc/init.d',
-    path    => "/sbin:/bin:/usr/bin:/tmp/gcml/guacamole-server-${server_version}-incubating"
+    path    => "/sbin:/bin:/usr/bin:/tmp/gcml/guacamole-server-${server_version}"
   }
-  Archive['/tmp/gcml/guacamole-server.tar.gz'] ~> Guacamole::Build["/tmp/gcml/guacamole-server-${server_version}-incubating"] ~> Service['guacd']
+  Archive['/tmp/gcml/guacamole-server.tar.gz'] ~> Guacamole::Build["/tmp/gcml/guacamole-server-${server_version}"] ~> Service['guacd']
 
   file_line { 'guacamole-home-line':
     path  => '/etc/environment',
